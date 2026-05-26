@@ -32,6 +32,11 @@ export const validateContactForm = (fields) => {
   return errors;
 };
 
+const encode = (data) =>
+  Object.keys(data)
+    .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+    .join('&');
+
 export const handleFormSubmit = async (fields, setErrors, setSubmitted, setIsLoading, setSubmitError) => {
   const errors = validateContactForm(fields);
   if (Object.keys(errors).length > 0) {
@@ -39,32 +44,26 @@ export const handleFormSubmit = async (fields, setErrors, setSubmitted, setIsLoa
     return false;
   }
   setErrors({});
-  
+
   if (setIsLoading) setIsLoading(true);
   if (setSubmitError) setSubmitError('');
 
   try {
-    const apiBase = window.location.origin.includes('localhost') ? 'http://localhost:5000' : '';
-    const response = await fetch(`${apiBase}/api/contact`, {
+    const response = await fetch('/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(fields),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: encode({ 'form-name': 'contact', 'bot-field': '', ...fields }),
     });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      setSubmitted(true);
-      return true; // Indicates success so component can reset fields
-    } else {
-      if (setSubmitError) setSubmitError(data.error || 'Failed to send inquiry.');
-      return false;
+    if (!response.ok) {
+      throw new Error(`Submission failed (Status ${response.status}). Please try again.`);
     }
+
+    setSubmitted(true);
+    return true;
   } catch (error) {
     console.error('Error submitting form:', error);
-    if (setSubmitError) setSubmitError('Failed to connect to the server. Please try again later.');
+    if (setSubmitError) setSubmitError(error.message || 'Something went wrong. Please check your connection.');
     return false;
   } finally {
     if (setIsLoading) setIsLoading(false);

@@ -67,6 +67,10 @@ const ContactForm = () => {
   return (
     <div className="fade-in-2" style={{ width: '100%', maxWidth: '1100px', margin: 'clamp(2rem, 8vw, 5rem) auto', padding: '0' }}>
       <form
+        name="contact"
+        method="POST"
+        data-netlify="true"
+        data-netlify-honeypot="bot-field"
         onSubmit={onSubmit}
         style={{
           background: 'white',
@@ -78,6 +82,10 @@ const ContactForm = () => {
           overflow: 'hidden'
         }}
       >
+        {/* Hidden fields required by Netlify Forms */}
+        <input type="hidden" name="form-name" value="contact" />
+        <p hidden><label>Don't fill this out: <input name="bot-field" /></label></p>
+
         {/* Subtle top accent */}
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
