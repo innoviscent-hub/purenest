@@ -1,45 +1,76 @@
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <!-- Leaf Gradient -->
-    <linearGradient id="favLeafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#006837" />
-      <stop offset="100%" stop-color="#1ba363" />
+    <!-- Rounded square background -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d2b5e" />
+      <stop offset="100%" stop-color="#1a3f7a" />
     </linearGradient>
-    <!-- Blue Hand/Roof Gradient -->
-    <linearGradient id="favBlueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#002818" />
-      <stop offset="100%" stop-color="#006837" />
+    <!-- Leaf gradient -->
+    <linearGradient id="leafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1a6b2f" />
+      <stop offset="50%" stop-color="#2db84a" />
+      <stop offset="100%" stop-color="#5fd87a" />
     </linearGradient>
-    <!-- Real Blue Gradient matching image -->
-    <linearGradient id="favRealBlueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#082a5c" />
-      <stop offset="100%" stop-color="#1a62b8" />
+    <!-- Wave/hand gradient -->
+    <linearGradient id="waveGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0a2f6e" />
+      <stop offset="60%" stop-color="#1558b0" />
+      <stop offset="100%" stop-color="#3a82d8" />
+    </linearGradient>
+    <!-- House gradient -->
+    <linearGradient id="houseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d2b5e" />
+      <stop offset="100%" stop-color="#1a3f7a" />
+    </linearGradient>
+    <!-- Sparkle gradient -->
+    <linearGradient id="sparkleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4fc3f7" />
+      <stop offset="100%" stop-color="#1a88e0" />
     </linearGradient>
   </defs>
 
-  <!-- Leaf on the left -->
-  <path d="M 46,80 C 26,74 20,44 48,15 C 38,32 33,54 46,80 Z" fill="url(#favLeafGrad)" />
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="96" fill="url(#bgGrad)" />
 
-  <!-- Hand at the bottom cradling the house -->
-  <path d="M 46,80 C 58,92 78,88 86,70 C 92,58 93,42 88,32 C 86,52 74,68 56,68 C 50,68 44,65 46,80 Z" fill="url(#favRealBlueGrad)" />
+  <!-- Scale and center the emblem (100x100 viewbox → 420x420 within 512x512) -->
+  <g transform="translate(46, 46) scale(4.2)">
 
-  <!-- Chimney -->
-  <rect x="68" y="27" width="5" height="12" fill="url(#favRealBlueGrad)" />
+    <!-- 1. Green leaf arc (left side) -->
+    <path
+      d="M 48 82 C 20 75, 12 38, 46 10 C 34 28, 28 55, 44 78 Z"
+      fill="url(#leafGrad)"
+    />
 
-  <!-- Roof -->
-  <path d="M 58,19 L 36,39 L 41,44 L 58,29 L 75,44 L 80,39 Z" fill="url(#favRealBlueGrad)" />
+    <!-- 2. Blue wave / hand (bottom-right) -->
+    <path
+      d="M 44 78 C 54 92, 76 90, 86 72 C 93 57, 94 38, 88 28
+         C 86 50, 73 66, 56 66 C 49 66, 43 63, 44 78 Z"
+      fill="url(#waveGrad)"
+    />
 
-  <!-- House Body (White) -->
-  <path d="M 45,38 L 71,38 L 71,60 C 65,64 55,64 45,60 Z" fill="#ffffff" />
+    <!-- 3. Chimney -->
+    <rect x="67" y="25" width="5" height="13" rx="1" fill="url(#houseGrad)" />
 
-  <!-- Window panes -->
-  <rect x="52" y="46" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
-  <rect x="57" y="46" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
-  <rect x="52" y="51" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
-  <rect x="57" y="51" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
+    <!-- 4. Roof -->
+    <path d="M 57 18 L 33 40 L 38 45 L 57 27 L 76 45 L 81 40 Z"
+      fill="url(#houseGrad)" />
 
-  <!-- Sparkles -->
-  <path d="M 76,10 Q 76,15 81,15 Q 76,15 76,20 Q 76,15 71,15 Q 76,15 76,10 Z" fill="#00aeef" />
-  <path d="M 68,18 Q 68,22 72,22 Q 68,22 68,26 Q 68,22 64,22 Q 68,22 68,18 Z" fill="#00aeef" />
-  <path d="M 82,22 Q 82,25 85,25 Q 82,25 82,28 Q 82,25 79,25 Q 82,25 82,22 Z" fill="#00aeef" />
+    <!-- 5. House body (white) -->
+    <path d="M 42 40 L 72 40 L 72 62 C 67 65, 58 65.5, 42 62 Z" fill="#ffffff" />
+
+    <!-- 6. Window panes (2x2) -->
+    <rect x="51" y="46" width="4" height="4" rx="0.5" fill="url(#waveGrad)" />
+    <rect x="57" y="46" width="4" height="4" rx="0.5" fill="url(#waveGrad)" />
+    <rect x="51" y="52" width="4" height="4" rx="0.5" fill="url(#waveGrad)" />
+    <rect x="57" y="52" width="4" height="4" rx="0.5" fill="url(#waveGrad)" />
+
+    <!-- 7. Sparkle stars (top-right) -->
+    <path d="M 79 8 Q 79 13 84 13 Q 79 13 79 18 Q 79 13 74 13 Q 79 13 79 8 Z"
+      fill="url(#sparkleGrad)" />
+    <path d="M 70 16 Q 70 20 74 20 Q 70 20 70 24 Q 70 20 66 20 Q 70 20 70 16 Z"
+      fill="#4fc3f7" />
+    <path d="M 85 20 Q 85 23 88 23 Q 85 23 85 26 Q 85 23 82 23 Q 85 23 85 20 Z"
+      fill="url(#sparkleGrad)" />
+
+  </g>
 </svg>
