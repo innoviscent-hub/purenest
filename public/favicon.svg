@@ -1,0 +1,45 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Leaf Gradient -->
+    <linearGradient id="favLeafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#006837" />
+      <stop offset="100%" stop-color="#1ba363" />
+    </linearGradient>
+    <!-- Blue Hand/Roof Gradient -->
+    <linearGradient id="favBlueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#002818" />
+      <stop offset="100%" stop-color="#006837" />
+    </linearGradient>
+    <!-- Real Blue Gradient matching image -->
+    <linearGradient id="favRealBlueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#082a5c" />
+      <stop offset="100%" stop-color="#1a62b8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Leaf on the left -->
+  <path d="M 46,80 C 26,74 20,44 48,15 C 38,32 33,54 46,80 Z" fill="url(#favLeafGrad)" />
+
+  <!-- Hand at the bottom cradling the house -->
+  <path d="M 46,80 C 58,92 78,88 86,70 C 92,58 93,42 88,32 C 86,52 74,68 56,68 C 50,68 44,65 46,80 Z" fill="url(#favRealBlueGrad)" />
+
+  <!-- Chimney -->
+  <rect x="68" y="27" width="5" height="12" fill="url(#favRealBlueGrad)" />
+
+  <!-- Roof -->
+  <path d="M 58,19 L 36,39 L 41,44 L 58,29 L 75,44 L 80,39 Z" fill="url(#favRealBlueGrad)" />
+
+  <!-- House Body (White) -->
+  <path d="M 45,38 L 71,38 L 71,60 C 65,64 55,64 45,60 Z" fill="#ffffff" />
+
+  <!-- Window panes -->
+  <rect x="52" y="46" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
+  <rect x="57" y="46" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
+  <rect x="52" y="51" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
+  <rect x="57" y="51" width="3.5" height="3.5" fill="url(#favRealBlueGrad)" />
+
+  <!-- Sparkles -->
+  <path d="M 76,10 Q 76,15 81,15 Q 76,15 76,20 Q 76,15 71,15 Q 76,15 76,10 Z" fill="#00aeef" />
+  <path d="M 68,18 Q 68,22 72,22 Q 68,22 68,26 Q 68,22 64,22 Q 68,22 68,18 Z" fill="#00aeef" />
+  <path d="M 82,22 Q 82,25 85,25 Q 82,25 82,28 Q 82,25 79,25 Q 82,25 82,22 Z" fill="#00aeef" />
+</svg>

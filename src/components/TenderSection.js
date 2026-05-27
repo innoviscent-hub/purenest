@@ -30,7 +30,7 @@ const TenderSection = () => {
           <h2 style={{ color: '#002818' }}>Institutional Excellence</h2>
           <p>
             We specialize in meeting the rigorous technical and operational requirements
-            of institutional and corporate facility management in Wellington.
+            of institutional and corporate facility management in Auckland.
           </p>
         </div>
 

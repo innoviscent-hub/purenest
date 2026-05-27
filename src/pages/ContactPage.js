@@ -3,7 +3,7 @@ import ContactForm from '../components/ContactForm';
 import { company } from '../models/dataModel';
 
 const contactItems = [
-  { icon: '📍', label: 'Global Headquarters', value: company.address, sub: 'Central Wellington, NZ' },
+  { icon: '📍', label: 'Global Headquarters', value: company.address, sub: 'Auckland CBD, NZ' },
   { icon: '📞', label: 'Direct Line', value: company.phone, sub: 'Available Mon-Fri, 8am-6pm' },
   { icon: '✉️', label: 'Email Support', value: company.email, sub: 'Inquiries & Proposals' },
   { icon: '🕒', label: 'Response Time', value: 'Within 24 Hours', sub: 'Guaranteed turnaround' },
@@ -14,7 +14,7 @@ const ContactPage = () => {
     <div className="fade-in" style={{ background: '#ffffff' }}>
 
       {/* Hero Section */}
-      <header className="hero-header" style={{ padding: '10rem 0 8rem' }}>
+      <header className="hero-header" style={{ paddingTop: 'calc(var(--navbar-height, 90px) + clamp(5.5rem, 10vw, 7.5rem))', paddingBottom: '8rem' }}>
         <div style={{
           position: 'absolute', inset: 0,
         }} />
@@ -65,10 +65,10 @@ const ContactPage = () => {
                   letterSpacing: '-0.01em',
                   wordBreak: 'break-word'
                 }}>
-                  Wellington Office
+                  Auckland Office
                 </h2>
                 <p style={{ color: '#5a7060', fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', lineHeight: 1.8, maxWidth: '100%' }}>
-                  Our headquarters is located in the heart of Wellington. We welcome scheduled visits and are always ready to discuss new partnerships or existing service contracts.
+                  Our headquarters is located in the heart of Auckland. We welcome scheduled visits and are always ready to discuss new partnerships or existing service contracts.
                 </p>
               </div>
 

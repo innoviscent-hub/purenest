@@ -61,7 +61,7 @@ const Testimonials = () => {
             Commitment to Excellence
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1rem' }}>
-            Trusted by corporate, institutional, and high-end clients across Wellington.
+            Trusted by corporate, institutional, and high-end clients across Auckland.
           </p>
         </div>
 

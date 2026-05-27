@@ -60,11 +60,11 @@ const AboutPage = () => {
                 marginBottom: '1.75rem',
                 lineHeight: 1.3,
               }}>
-                Wellington's Premier<br />
+                Auckland's Premier<br />
                 <span style={{ color: '#006837' }}>Institutional Partner</span>
               </h2>
               <p style={{ fontSize: '1.1rem', color: '#5a7060', lineHeight: 1.7, marginBottom: '1rem' }}>
-                Founded in {company.founded}, PureNest has grown from a local cleaning service to Wellington's premier facility management partner for corporate and institutional clients. We understand that prestigious grounds are more than just buildings — they are environments that require the highest level of care, security, and aesthetic perfection.
+                Founded in {company.founded}, PureNest has grown from a local cleaning service to Auckland's premier facility management partner for corporate and institutional clients. We understand that prestigious grounds are more than just buildings — they are environments that require the highest level of care, security, and aesthetic perfection.
               </p>
               <p style={{ fontSize: '1.1rem', color: '#5a7060', lineHeight: 1.6 }}>
                 Our team of <strong style={{ color: '#002818' }}>{company.staffCount} professionals</strong> is certified, vetted, and trained in specialized protocols ranging from chandelier restoration to high-security perimeter landscaping.

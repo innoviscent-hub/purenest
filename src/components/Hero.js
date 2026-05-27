@@ -14,7 +14,7 @@ const Hero = () => {
       overflow: 'hidden',
       display: 'flex',
       alignItems: 'center',
-      paddingTop: 'clamp(5rem, 10vw, 7rem)',
+      paddingTop: 'calc(var(--navbar-height, 90px) + clamp(3.5rem, 8vw, 6rem))',
       paddingBottom: '2rem', 
       width: '100%',
       maxWidth: '100%',

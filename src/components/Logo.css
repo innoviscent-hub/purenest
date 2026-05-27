@@ -1,0 +1,159 @@
+/* ── Logo Component Styles ────────────────────────── */
+.purenest-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Row 1: Icon and Text inline */
+.purenest-logo__row1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+  justify-content: center;
+  width: 100%;
+}
+
+.purenest-logo__text {
+  display: flex;
+  align-items: baseline;
+}
+
+.purenest-logo__pure,
+.purenest-logo__nest {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  transition: color 0.3s ease;
+}
+
+/* Row 2: LIMITED */
+.purenest-logo__row2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 1px 0 2px;
+  width: 210px;
+  max-width: 100%;
+  transition: all 0.3s ease;
+}
+
+.purenest-logo__line {
+  flex: 1;
+  height: 1px;
+  min-width: 10px;
+  transition: background 0.3s ease;
+}
+
+.purenest-logo__limited {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+/* Row 3: Tagline */
+.purenest-logo__row3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  margin-top: 2px;
+  text-align: center;
+}
+
+/* ──────────────────────────────────────────────────────────
+   RESPONSIVE DESIGN SYSTEM
+   ────────────────────────────────────────────────────────── */
+
+/* Header Logo responsive styling */
+.navbar__logo .purenest-logo {
+  margin-left: 0 !important;
+}
+
+/* On tablet/mobile screens: show tagline and limited lines on a single line to prevent overlap */
+@media (max-width: 1024px) {
+  .navbar__logo .purenest-logo__row2 {
+    display: flex !important;
+    width: 150px !important;
+  }
+  
+  .navbar__logo .purenest-logo__row3 {
+    display: block !important;
+    white-space: nowrap !important;
+    max-width: none !important;
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.4px !important;
+    line-height: 1.2 !important;
+    margin-top: 2px !important;
+  }
+  
+  /* Make the main brand name text slightly smaller on mobile screens */
+  .navbar__logo .purenest-logo__pure,
+  .navbar__logo .purenest-logo__nest {
+    font-size: 22px;
+  }
+  
+  /* Scale the SVG emblem slightly smaller too */
+  .navbar__logo svg {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+/* On extremely small screens (below 360px), scale even further */
+@media (max-width: 360px) {
+  .navbar__logo .purenest-logo__pure,
+  .navbar__logo .purenest-logo__nest {
+    font-size: 19px;
+  }
+  
+  .navbar__logo svg {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .navbar__logo .purenest-logo__row2 {
+    width: 130px !important;
+  }
+
+  .navbar__logo .purenest-logo__row3 {
+    font-size: 7px !important;
+    letter-spacing: 0.2px !important;
+  }
+}
+
+/* Footer Logo styling */
+.footer__logo .purenest-logo {
+  margin-left: 0 !important;
+  align-items: flex-start !important;
+}
+
+.footer__logo .purenest-logo__row1,
+.footer__logo .purenest-logo__row2,
+.footer__logo .purenest-logo__row3 {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+/* Footer Logo responsive styling */
+@media (max-width: 1024px) {
+  .footer__logo .purenest-logo__row3 {
+    white-space: normal !important; /* Allow tagline to wrap on small screens */
+    max-width: 280px;
+    font-size: 8.5px; /* Slightly larger for readability when wrapped */
+    line-height: 1.4;
+  }
+}

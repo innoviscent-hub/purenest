@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { navLinks } from "../models/dataModel";
 import { handleNavClick } from "../controllers/appController";
+import Logo from "./Logo";
 import "./Navbar.css";
 
 const Navbar = ({ dark = false }) => {
@@ -25,19 +26,36 @@ const Navbar = ({ dark = false }) => {
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
+  useEffect(() => {
+    const updateNavbarHeight = () => {
+      const navElement = document.querySelector(".navbar");
+      if (navElement) {
+        document.documentElement.style.setProperty(
+          "--navbar-height",
+          `${navElement.offsetHeight}px`
+        );
+      }
+    };
+
+    updateNavbarHeight();
+
+    // Use resize listener and standard animation frames/timeouts to capture exact height changes
+    window.addEventListener("resize", updateNavbarHeight);
+    const timeoutId = setTimeout(updateNavbarHeight, 100);
+
+    return () => {
+      window.removeEventListener("resize", updateNavbarHeight);
+      clearTimeout(timeoutId);
+    };
+  }, [scrolled, menuOpen, location.pathname]);
+
   return (
     <>
       <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""} ${dark ? "navbar--dark" : ""} ${menuOpen ? "navbar--open" : ""}`}>
         <div className="navbar__inner">
           {/* Logo */}
           <button className="navbar__logo" onClick={() => handleNavClick(navigate, "/", null)}>
-            <div className="navbar__logo-icon">
-              <span>P</span>
-            </div>
-            <div className="navbar__logo-text">
-              <span className="navbar__logo-name">PureNest</span>
-              <span className="navbar__logo-sub">Facility Services</span>
-            </div>
+            <Logo light={!scrolled && !dark && !menuOpen} height={44} />
           </button>
 
           {/* Desktop Links */}

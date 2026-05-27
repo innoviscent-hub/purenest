@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { company, navLinks } from "../models/dataModel";
 import { handleNavClick } from "../controllers/appController";
+import Logo from "./Logo";
 import "./Footer.css";
 
 const Footer = () => {
@@ -16,11 +17,7 @@ const Footer = () => {
           {/* ── Brand ── */}
           <div className="footer__brand">
             <div className="footer__logo">
-              <div className="footer__logo-icon">P</div>
-              <div>
-                <div className="footer__logo-name">PureNest</div>
-                <span className="footer__logo-sub">Facility Services</span>
-              </div>
+              <Logo light={true} height={44} />
             </div>
             <p className="footer__brand-desc">
               Delivering world-class cleaning, landscaping, and pest control services
@@ -89,7 +86,7 @@ const Footer = () => {
       <div className="footer__bottom">
         <div className="container footer__bottom-inner">
           <span>© {year} PureNest Facility Services. All rights reserved.</span>
-          <span>Wellington, New Zealand · NZBN Registered</span>
+          <span>Auckland, New Zealand · NZBN Registered</span>
         </div>
       </div>
     </footer>

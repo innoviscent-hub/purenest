@@ -10,9 +10,9 @@ const TenderPage = () => {
   return (
     <div className="fade-in">
 
-      {/* Hero */}
       <header style={{
-        padding: '6rem 0 4rem',
+        paddingTop: 'calc(var(--navbar-height, 90px) + clamp(3.5rem, 8vw, 5.5rem))',
+        paddingBottom: '4rem',
         background: 'linear-gradient(160deg, #001a0e 0%, #003520 55%, #005228 100%)',
         color: 'white',
         textAlign: 'center',

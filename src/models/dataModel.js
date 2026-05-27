@@ -9,7 +9,7 @@ export const company = {
   email: "hello@purenestcleaning.co.nz",
   phone: "+64 22 088 9959",
   website: "purenestcleaning.co.nz",
-  address: "Wellington, New Zealand",
+  address: "89-92 Victoria Street West, Auckland CBD, Auckland - 1010",
   founded: "2016",
   yearsExperience: "10+",
   projectsCompleted: "10+",
@@ -95,8 +95,8 @@ export const services = [
 ];
 
 export const tenderDetails = {
-  client: "Corporate Headquarters, Wellington",
-  location: "Wellington, New Zealand",
+  client: "Corporate Headquarters, Auckland",
+  location: "Auckland, New Zealand",
   scope: "Commercial Office & Executive Residence",
   duration: "3 Years",
   currency: "NZD (New Zealand Dollar)",
@@ -181,7 +181,7 @@ export const testimonials = [
     rating: 5
   },
   {
-    quote: "The most reliable custodial service in Wellington. They handled our marble floor restoration with world-class expertise.",
+    quote: "The most reliable custodial service in Auckland. They handled our marble floor restoration with world-class expertise.",
     author: "Facility Manager",
     client: "International Organization",
     rating: 5
