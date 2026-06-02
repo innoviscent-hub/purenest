@@ -33,7 +33,7 @@ export const navLinks = [
   { label: "Home", path: "/" },
   { label: "Services", path: "/services" },
   { label: "About", path: "/about" },
-  { label: "Projects", path: "/tender" },
+  { label: "Projects", path: "/projects" },
   { label: "Contact", path: "/contact" },
 ];
 

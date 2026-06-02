@@ -105,7 +105,7 @@ const Hero = () => {
             </button>
             <button
               className="btn btn-outline-white"
-              onClick={() => handleNavClick(navigate, '/tender', null)}
+              onClick={() => handleNavClick(navigate, '/projects', null)}
             >
               Completed Projects
             </button>
