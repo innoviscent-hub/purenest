@@ -1,4 +1,5 @@
 import React from 'react';
+import SEO from '../components/SEO';
 import { tenderDetails, evaluationCriteria, projectHistory } from '../models/dataModel';
 
 const TenderPage = () => {
@@ -9,6 +10,11 @@ const TenderPage = () => {
 
   return (
     <div className="fade-in">
+      <SEO 
+        title="Completed Projects" 
+        description="A track record of delivering excellence for corporate, educational, and hospitality clients across New Zealand." 
+        path="/projects" 
+      />
 
       <header style={{
         paddingTop: 'calc(var(--navbar-height, 90px) + clamp(3.5rem, 8vw, 5.5rem))',

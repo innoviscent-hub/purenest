@@ -8,6 +8,9 @@ import TenderSection from './components/TenderSection';
 import Requirements from './components/Requirements';
 import ContactForm from './components/ContactForm';
 import Testimonials from './components/Testimonials';
+import { HelmetProvider } from 'react-helmet-async';
+import AnalyticsTracker from './components/AnalyticsTracker';
+import SEO from './components/SEO';
 
 // Pages
 import ServicesPage from './pages/ServicesPage';
@@ -22,8 +25,10 @@ const ContactRoute = () => <><ContactPage /><Footer /></>;
 
 function App() {
   return (
-    <Router>
-      <NavbarWrapper />
+    <HelmetProvider>
+      <Router>
+        <AnalyticsTracker />
+        <NavbarWrapper />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/services" element={<ServicesRoute />} />
@@ -31,7 +36,8 @@ function App() {
         <Route path="/about" element={<AboutRoute />} />
         <Route path="/contact" element={<ContactRoute />} />
       </Routes>
-    </Router>
+      </Router>
+    </HelmetProvider>
   );
 }
 
@@ -60,6 +66,11 @@ const Home = () => {
 
   return (
     <main className="fade-in">
+      <SEO 
+        title="Home"
+        description="Professional cleaning services and facility management solutions tailored for commercial and institutional environments in New Zealand."
+        path="/"
+      />
       <Hero />
       <Services />
       <Testimonials />

@@ -1,5 +1,6 @@
 import React from 'react';
 import ContactForm from '../components/ContactForm';
+import SEO from '../components/SEO';
 import { company } from '../models/dataModel';
 
 const contactItems = [
@@ -12,6 +13,11 @@ const contactItems = [
 const ContactPage = () => {
   return (
     <div className="fade-in" style={{ background: '#ffffff' }}>
+      <SEO 
+        title="Contact Us" 
+        description="Get in touch with PureNest Cleaning. Professional facility management and cleaning solutions tailored to your institution's specific needs." 
+        path="/contact" 
+      />
 
       {/* Hero Section */}
       <header className="hero-header" style={{ paddingTop: 'calc(var(--navbar-height, 90px) + clamp(5.5rem, 10vw, 7.5rem))', paddingBottom: '8rem' }}>

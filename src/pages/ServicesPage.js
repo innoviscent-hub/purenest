@@ -1,4 +1,5 @@
 import React from 'react';
+import SEO from '../components/SEO';
 import { services } from '../models/dataModel';
 import custodialImg from '../assets/custodial.png';
 import landscapingImg from '../assets/landscaping.png';
@@ -19,6 +20,11 @@ const serviceColors = {
 const ServicesPage = () => {
   return (
     <div className="fade-in">
+      <SEO 
+        title="Our Services" 
+        description="Comprehensive facility management and cleaning solutions tailored for commercial and institutional environments." 
+        path="/services" 
+      />
 
       {/* Hero Header */}
       <header className="hero-header">

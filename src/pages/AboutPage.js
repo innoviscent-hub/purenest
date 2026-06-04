@@ -1,9 +1,15 @@
 import React from 'react';
+import SEO from '../components/SEO';
 import { company, stats } from '../models/dataModel';
 
 const AboutPage = () => {
   return (
     <div className="fade-in">
+      <SEO 
+        title="About Us" 
+        description="Precision facility management with a legacy of excellence in New Zealand. Learn more about PureNest's story and our dedicated professionals." 
+        path="/about" 
+      />
 
       {/* Hero */}
       <header className="hero-header">
