@@ -9,7 +9,9 @@ export const scrollToTop = () => {
 export const handleNavClick = (navigate, path, setMenuOpen) => {
   navigate(path);
   if (setMenuOpen) setMenuOpen(false);
-  scrollToTop();
+  if (!path.includes('#')) {
+    scrollToTop();
+  }
 };
 
 export const validateContactForm = (fields) => {

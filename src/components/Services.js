@@ -8,18 +8,25 @@ import pestImg from '../assets/pestcontrol.png';
 
 const serviceImages = {
   cleaning: custodialImg,
+  deepclean: custodialImg,
   landscaping: landscapingImg,
   pest: pestImg
 };
 
 const serviceAccents = {
   cleaning:    { color: '#006837', light: '#f0fdf4', badge: 'Cleaning' },
+  deepclean:   { color: '#0b6b44', light: '#ecfdf3', badge: 'Deep Clean' },
   landscaping: { color: '#005228', light: '#f0fdf4', badge: 'Landscaping' },
   pest:        { color: '#003d20', light: '#f0fdf4', badge: 'Pest Control' },
 };
 
 const Services = () => {
   const navigate = useNavigate();
+  const deepCleanService = services.find((service) => service.id === 'deepclean');
+  const homepageServices = [
+    ...services.filter((service) => service.id !== 'deepclean'),
+    deepCleanService,
+  ].filter(Boolean);
 
   return (
     <section id="services" className="section-padding" style={{
@@ -73,8 +80,8 @@ const Services = () => {
         </div>
 
         {/* Service Cards */}
-        <div className="grid-3">
-          {services.map((service, index) => {
+        <div className="grid-3 services-grid-balanced">
+          {homepageServices.map((service, index) => {
             const accent = serviceAccents[service.id] || { color: '#006837', light: '#f0fdf4', badge: service.title };
             return (
               <div
