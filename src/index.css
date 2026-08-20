@@ -93,6 +93,7 @@
 html {
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
+  scroll-padding-top: var(--navbar-height, 80px);
 }
 
 body {
@@ -764,13 +765,25 @@ h6 {
     gap: 2rem;
   }
 
-
-
-
-
   .btn {
     width: 100%;
+    max-width: 360px;
+    margin-inline: auto;
     justify-content: center;
+    font-size: clamp(0.78rem, 3.3vw, 0.9rem);
+    padding: 0.9rem clamp(0.75rem, 3vw, 1.5rem);
+    white-space: normal;
+  }
+
+  .hero-cta-btn {
+    width: auto !important;
+  }
+  @media (max-width: 580px) {
+    .hero-cta-btn {
+      width: 100% !important;
+      max-width: 360px;
+      margin-inline: auto;
+    }
   }
 
   .form-row {

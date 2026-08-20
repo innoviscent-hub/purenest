@@ -59,7 +59,7 @@ const Hero = () => {
           {/* ── Headline ── */}
           <h1 className="fade-in-2" style={{
             fontFamily: 'Playfair Display, serif',
-            fontSize: 'clamp(2.8rem, 6vw, 5.5rem)',
+            fontSize: 'clamp(2.0rem, 6vw, 5.5rem)',
             fontWeight: 800,
             lineHeight: 1.08,
             letterSpacing: '-0.03em',
@@ -95,17 +95,25 @@ const Hero = () => {
             flexWrap: 'wrap',
           }}>
             <button
-              className="btn btn-gold"
+              className="btn btn-gold hero-cta-btn"
               onClick={() => handleNavClick(navigate, '/services', null)}
+              style={{
+                padding: '0.9rem clamp(1rem, 4vw, 1.5rem)',
+                fontSize: 'clamp(0.78rem, 3.2vw, 0.9rem)',
+              }}
             >
               Explore Services
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </button>
             <button
-              className="btn btn-outline-white"
+              className="btn btn-outline-white hero-cta-btn"
               onClick={() => handleNavClick(navigate, '/projects', null)}
+              style={{
+                padding: '0.9rem clamp(1rem, 4vw, 1.5rem)',
+                fontSize: 'clamp(0.78rem, 3.2vw, 0.9rem)',
+              }}
             >
               Completed Projects
             </button>

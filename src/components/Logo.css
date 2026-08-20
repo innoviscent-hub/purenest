@@ -146,6 +146,14 @@
   }
 }
 
+@media (max-width: 480px) {
+  .navbar__logo .purenest-logo__row2,
+  .navbar__logo .purenest-logo__row3 {
+    display: none !important;
+  }
+}
+
+
 /* ══════════════════════════════════════════════
    FOOTER LOGO
    ══════════════════════════════════════════════ */
