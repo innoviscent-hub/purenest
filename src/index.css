@@ -93,7 +93,18 @@
 html {
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
-  scroll-padding-top: var(--navbar-height, 80px);
+  scroll-padding-top: calc(var(--navbar-height, 80px) + 1.25rem);
+}
+
+#standard-clean-rates,
+#deep-clean-rates,
+#pricing,
+#deep-clean,
+#addons,
+#conditions,
+#how-it-works,
+#inspection {
+  scroll-margin-top: calc(var(--navbar-height, 80px) + 1.25rem);
 }
 
 body {
@@ -940,6 +951,10 @@ h6 {
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+
   .hero-section {
     min-height: auto !important;
     padding-top: 6rem !important;

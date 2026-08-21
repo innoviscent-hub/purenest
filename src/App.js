@@ -13,6 +13,7 @@ import ContactPage from './pages/ContactPage';
 import ServiceSelectorPage from './pages/ServiceSelectorPage';
 import CommercialPage from './pages/CommercialPage';
 import DomesticCleaningPage from './pages/DomesticCleaningPage';
+import DomesticServicesPage from './pages/DomesticServicesPage';
 
 const ServicesRoute = () => <><ServicesPage /><Footer /></>;
 const TenderRoute = () => <><TenderPage /><Footer /></>;
@@ -26,10 +27,20 @@ const ScrollToTop = () => {
   React.useEffect(() => {
     if (hash) {
       const id = hash.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
+      const scrollToTarget = () => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+
+      const frameId = requestAnimationFrame(() => {
+        scrollToTarget();
+        const timeoutId = setTimeout(scrollToTarget, 100);
+        return () => clearTimeout(timeoutId);
+      });
+
+      return () => cancelAnimationFrame(frameId);
     } else if (navigationType !== 'POP') {
       window.scrollTo(0, 0);
     }
@@ -49,6 +60,7 @@ function App() {
           <Route path="/" element={<ServiceSelectorPage />} />
           <Route path="/commercial" element={<CommercialPage />} />
           <Route path="/domestic-cleaning" element={<DomesticCleaningPage />} />
+          <Route path="/domestic-cleaning/services" element={<DomesticServicesPage />} />
           <Route path="/services" element={<ServicesRoute />} />
           <Route path="/projects" element={<TenderRoute />} />
           <Route path="/about" element={<AboutRoute />} />

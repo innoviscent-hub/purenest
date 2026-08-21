@@ -278,7 +278,7 @@ const ServicesPage = () => {
             );
           })}
 
-          <section className="deep-clean-featured-panel" style={{ marginTop: '2.5rem' }}>
+          <section id="deep-clean-rates" className="deep-clean-featured-panel" style={{ marginTop: '2.5rem' }}>
             <span className="label-badge label-badge-gold">FEATURED CLEANING SERVICE</span>
             <h2
               style={{

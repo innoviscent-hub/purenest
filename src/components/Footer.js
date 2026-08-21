@@ -6,7 +6,7 @@ import Logo from "./Logo";
 import "./Footer.css";
 
 const commercialLinks = [
-  { label: "Home", path: "/" },
+  { label: "Home", path: "/commercial" },
   { label: "Services", path: "/services" },
   { label: "About", path: "/about" },
   { label: "Projects", path: "/projects" },
@@ -15,11 +15,11 @@ const commercialLinks = [
 
 const domesticLinks = [
   { label: "Main Site", path: "/" },
-  { label: "Domestic Cleaning", path: "/domestic-cleaning" },
-  { label: "Pricing", path: "/domestic-cleaning#pricing" },
-  { label: "Deep Clean", path: "/domestic-cleaning#deep-clean" },
+  { label: "Domestic Home", path: "/domestic-cleaning" },
+  { label: "Services & Pricing", path: "/domestic-cleaning/services" },
+  { label: "Deep Clean", path: "/domestic-cleaning/services#deep-clean" },
   { label: "How It Works", path: "/domestic-cleaning#how-it-works" },
-  { label: "Book Inspection", path: "/domestic-cleaning#inspection" },
+  { label: "Book Inspection", path: "/domestic-cleaning/services#inspection" },
 ];
 
 const Footer = () => {

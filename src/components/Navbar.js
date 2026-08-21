@@ -5,7 +5,7 @@ import Logo from "./Logo";
 import "./Navbar.css";
 
 const commercialLinks = [
-  { label: "Home", path: "/" },
+  { label: "Home", path: "/commercial" },
   { label: "Services", path: "/services" },
   { label: "About", path: "/about" },
   { label: "Projects", path: "/projects" },
@@ -13,8 +13,8 @@ const commercialLinks = [
 ];
 
 const domesticLinks = [
-  { label: "Home", path: "/" },
-  { label: "Services", path: "/domestic-cleaning#services" },
+  { label: "Home", path: "/domestic-cleaning" },
+  { label: "Services", path: "/domestic-cleaning/services" },
   { label: "About", path: "/about" },
   { label: "Projects", path: "/projects" },
   { label: "Contact", path: "/contact" },
@@ -50,6 +50,18 @@ const Navbar = ({ dark = false }) => {
 
   const isDomestic = getServiceContext() === "domestic";
   const links = isDomestic ? domesticLinks : commercialLinks;
+
+  const isLinkActive = (linkPath) => {
+    const currentPath = location.pathname;
+    const currentHash = location.hash;
+
+    if (linkPath.includes('#')) {
+      const [path, hash] = linkPath.split('#');
+      return currentPath === path && currentHash === `#${hash}`;
+    }
+
+    return currentPath === linkPath && !currentHash;
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -92,8 +104,11 @@ const Navbar = ({ dark = false }) => {
     <>
       <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""} ${dark ? "navbar--dark" : ""} ${menuOpen ? "navbar--open" : ""}`}>
         <div className="navbar__inner">
-          {/* Logo */}
-          <button className="navbar__logo" onClick={() => handleNavClick(navigate, "/", null)}>
+          {/* Logo — Universal return to global ServiceSelectorPage */}
+          <button
+            className="navbar__logo"
+            onClick={() => handleNavClick(navigate, "/", null)}
+          >
             <Logo light={!scrolled && !dark && !menuOpen} height={44} />
           </button>
 
@@ -101,8 +116,7 @@ const Navbar = ({ dark = false }) => {
           <div className="navbar__center">
             <ul className="navbar__links">
               {links.map((link) => {
-                const isActive = location.pathname === link.path || 
-                  (link.path.startsWith('/domestic-cleaning') && location.pathname === '/domestic-cleaning');
+                const isActive = isLinkActive(link.path);
                 return (
                   <li key={link.path}>
                     <button
@@ -120,7 +134,7 @@ const Navbar = ({ dark = false }) => {
           {/* CTA */}
           <button
             className="navbar__cta"
-            onClick={() => handleNavClick(navigate, isDomestic ? "/domestic-cleaning#inspection" : "/contact", null)}
+            onClick={() => handleNavClick(navigate, isDomestic ? "/domestic-cleaning/services#inspection" : "/contact", null)}
           >
             Get a Quote →
           </button>
@@ -148,8 +162,7 @@ const Navbar = ({ dark = false }) => {
       {/* Mobile Menu */}
       <div className={`navbar__mobile ${menuOpen ? "navbar__mobile--open" : ""}`}>
         {links.map((link) => {
-          const isActive = location.pathname === link.path || 
-            (link.path.startsWith('/domestic-cleaning') && location.pathname === '/domestic-cleaning');
+          const isActive = isLinkActive(link.path);
           return (
             <button
               key={link.path}
@@ -162,7 +175,7 @@ const Navbar = ({ dark = false }) => {
         })}
         <button
           className="navbar__mobile-cta"
-          onClick={() => handleNavClick(navigate, isDomestic ? "/domestic-cleaning#inspection" : "/contact", setMenuOpen)}
+          onClick={() => handleNavClick(navigate, isDomestic ? "/domestic-cleaning/services#inspection" : "/contact", setMenuOpen)}
         >
           Get a Quote →
         </button>
