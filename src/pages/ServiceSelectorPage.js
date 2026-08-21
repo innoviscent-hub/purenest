@@ -389,14 +389,14 @@ const ServiceSelectorPage = () => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.75rem 1.5rem',
-                background: 'linear-gradient(135deg, #b07d12, #c9a84c)',
+                background: 'rgba(0,104,55,0.2)',
+                border: '1px solid rgba(0,166,81,0.3)',
                 borderRadius: '9999px',
-                color: '#1a0e00',
+                color: '#00d468',
                 fontFamily: 'Sora, sans-serif',
                 fontSize: '0.85rem',
-                fontWeight: 800,
+                fontWeight: 700,
                 letterSpacing: '0.02em',
-                boxShadow: '0 8px 24px rgba(201,168,76,0.25)',
               }}
             >
               Explore Domestic Services

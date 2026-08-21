@@ -136,7 +136,7 @@ const Logo = ({ onlyIcon = false, light = false, height = 52, className = "", st
 
       {/* Row 3: Tagline */}
       <div className="purenest-logo__row3" style={{ color: tagColor }}>
-        Cleaner Spaces&nbsp;•&nbsp;Greener Environments&nbsp;•&nbsp;Better Living
+        Cleaner Spaces • Greener Environments • Better Living
       </div>
 
     </div>

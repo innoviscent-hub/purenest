@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { REGIONS, DISTRICTS } from '../models/locationData';
 
 // ============================================================
 // DomesticInspectionForm
@@ -53,6 +54,7 @@ const inputStyle = (hasError) => ({
   outline: 'none',
   transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
   boxSizing: 'border-box',
+  scrollMarginTop: 'calc(var(--navbar-height, 80px) + 20px)',
 });
 
 const labelStyle = {
@@ -84,6 +86,7 @@ const sectionTitleStyle = {
   marginBottom: '1.25rem',
   paddingBottom: '0.6rem',
   borderBottom: '1px solid rgba(0,104,55,0.08)',
+  scrollMarginTop: 'calc(var(--navbar-height, 80px) + 20px)',
 };
 
 const PROPERTY_SIZES = [
@@ -122,12 +125,380 @@ const EMPTY_FIELDS = {
   phone: '',
   propertyType: '',
   propertySize: '',
+  region: '',
+  district: '',
   propertyAddress: '',
   cleaningRequirement: '',
   preferredDate: '',
   preferredTime: '',
   additionalNotes: '',
   enquiryType: 'Domestic Cleaning Inspection',
+};
+
+const CustomDropdown = ({
+  id,
+  name,
+  value,
+  options,
+  placeholder,
+  onChange,
+  onFocus,
+  onBlur,
+  isFocused,
+  hasError,
+  inputStyle,
+  isDisabled = false,
+  isSearchable = false,
+  searchPlaceholder,
+}) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dropdownRef = useRef(null);
+  const listRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const selectedOptionObj = options.find((opt) => opt.value === value);
+  const selectedLabel = selectedOptionObj ? selectedOptionObj.label : placeholder;
+
+  const displayedOptions = isSearchable
+    ? (searchQuery.trim()
+        ? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+        : options)
+    : [{ value: '', label: placeholder }, ...options];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+        setSearchQuery('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (dropdownOpen && highlightedIndex >= 0 && listRef.current) {
+      const activeEl = listRef.current.querySelector(`#${id}-opt-${highlightedIndex}`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [highlightedIndex, dropdownOpen, id]);
+
+  const selectOption = (val) => {
+    onChange(val);
+    setDropdownOpen(false);
+    setSearchQuery('');
+  };
+
+  const handleKeyDown = (event) => {
+    if (isDisabled) return;
+    if (!dropdownOpen) {
+      if (event.key === ' ' || event.key === 'Enter' || event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        setDropdownOpen(true);
+        setSearchQuery('');
+        const currentIndex = displayedOptions.findIndex((opt) => opt.value === value);
+        setHighlightedIndex(currentIndex >= 0 ? currentIndex : 0);
+      }
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      setDropdownOpen(false);
+      setSearchQuery('');
+      event.preventDefault();
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (displayedOptions.length > 0) {
+        setHighlightedIndex((prev) => (prev + 1) % displayedOptions.length);
+      }
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (displayedOptions.length > 0) {
+        setHighlightedIndex((prev) => (prev - 1 + displayedOptions.length) % displayedOptions.length);
+      }
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < displayedOptions.length) {
+        selectOption(displayedOptions[highlightedIndex].value);
+      }
+    } else if (event.key === ' ' && !isSearchable) {
+      event.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < displayedOptions.length) {
+        selectOption(displayedOptions[highlightedIndex].value);
+      }
+    } else if (event.key === 'Tab') {
+      setDropdownOpen(false);
+      setSearchQuery('');
+    }
+  };
+
+  const focusStyle = isFocused
+    ? { borderColor: '#006837', background: 'white', boxShadow: '0 6px 16px rgba(0,104,55,0.08)' }
+    : {};
+
+  const inputValue = isSearchable
+    ? (dropdownOpen ? searchQuery : (value ? selectedLabel : ''))
+    : '';
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative' }}>
+      {isSearchable ? (
+        <div
+          style={{
+            ...inputStyle(hasError),
+            ...focusStyle,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: isDisabled ? '#f1f3f1' : (dropdownOpen ? 'white' : '#f8faf8'),
+            padding: 0,
+            cursor: isDisabled ? 'not-allowed' : 'text',
+          }}
+          onClick={() => {
+            if (isDisabled) return;
+            if (!dropdownOpen) {
+              setDropdownOpen(true);
+              setSearchQuery('');
+              inputRef.current?.focus();
+            }
+          }}
+        >
+          <input
+            ref={inputRef}
+            id={`${id}-trigger`}
+            type="text"
+            role="combobox"
+            disabled={isDisabled}
+            aria-autocomplete="list"
+            aria-expanded={dropdownOpen}
+            aria-disabled={isDisabled}
+            aria-haspopup="listbox"
+            aria-controls={`${id}-list`}
+            aria-labelledby={`${id}-label`}
+            aria-activedescendant={dropdownOpen && highlightedIndex >= 0 ? `${id}-opt-${highlightedIndex}` : undefined}
+            value={inputValue}
+            placeholder={dropdownOpen ? (searchPlaceholder || placeholder) : (value ? selectedLabel : placeholder)}
+            onChange={(e) => {
+              if (isDisabled) return;
+              if (!dropdownOpen) setDropdownOpen(true);
+              setSearchQuery(e.target.value);
+              setHighlightedIndex(0);
+            }}
+            onFocus={(e) => {
+              if (onFocus) onFocus(e);
+              if (!dropdownOpen && !isDisabled) {
+                setDropdownOpen(true);
+                setSearchQuery('');
+              }
+            }}
+            onBlur={(e) => {
+              if (onBlur) onBlur(e);
+            }}
+            onKeyDown={handleKeyDown}
+            style={{
+              width: '100%',
+              padding: '0.95rem 0.5rem 0.95rem 1.2rem',
+              border: 'none',
+              background: 'transparent',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '0.95rem',
+              color: isDisabled ? '#8ba091' : '#002818',
+              outline: 'none',
+              boxSizing: 'border-box',
+              cursor: isDisabled ? 'not-allowed' : 'text',
+            }}
+          />
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isDisabled) return;
+              const nextOpen = !dropdownOpen;
+              setDropdownOpen(nextOpen);
+              if (nextOpen) {
+                setSearchQuery('');
+                inputRef.current?.focus();
+              } else {
+                setSearchQuery('');
+              }
+            }}
+            style={{
+              padding: '0.95rem 1.2rem 0.95rem 0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              cursor: isDisabled ? 'not-allowed' : 'pointer',
+            }}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={isDisabled ? '#8ba091' : '#006837'}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease',
+                flexShrink: 0,
+              }}
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+        </div>
+      ) : (
+        <button
+          id={`${id}-trigger`}
+          type="button"
+          role="combobox"
+          disabled={isDisabled}
+          aria-autocomplete="none"
+          aria-expanded={dropdownOpen}
+          aria-disabled={isDisabled}
+          aria-haspopup="listbox"
+          aria-controls={`${id}-list`}
+          aria-labelledby={`${id}-label`}
+          aria-activedescendant={dropdownOpen && highlightedIndex >= 0 ? `${id}-opt-${highlightedIndex}` : undefined}
+          onClick={() => {
+            if (isDisabled) return;
+            const nextOpen = !dropdownOpen;
+            setDropdownOpen(nextOpen);
+            if (nextOpen) {
+              const allBaseOptions = [{ value: '', label: placeholder }, ...options];
+              const currentIndex = allBaseOptions.findIndex((opt) => opt.value === value);
+              setHighlightedIndex(currentIndex >= 0 ? currentIndex : 0);
+            }
+          }}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onKeyDown={handleKeyDown}
+          style={{
+            ...inputStyle(hasError),
+            ...focusStyle,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: isDisabled ? 'not-allowed' : 'pointer',
+            textAlign: 'left',
+            background: isDisabled ? '#f1f3f1' : '#f8faf8',
+            color: isDisabled ? '#8ba091' : '#002818',
+            opacity: isDisabled ? 0.65 : 1,
+            paddingRight: '1.2rem',
+          }}
+        >
+          <span>{selectedLabel}</span>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={isDisabled ? '#8ba091' : '#006837'}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s ease',
+              flexShrink: 0,
+            }}
+            aria-hidden="true"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+      )}
+
+      <input type="hidden" name={name} value={value} />
+
+      {dropdownOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '105%',
+            left: 0,
+            right: 0,
+            zIndex: 100,
+            background: 'white',
+            border: '1.5px solid rgba(0,104,55,0.12)',
+            borderRadius: '14px',
+            boxShadow: '0 10px 30px rgba(0,40,24,0.12)',
+            overflow: 'hidden',
+          }}
+        >
+          <ul
+            ref={listRef}
+            id={`${id}-list`}
+            role="listbox"
+            aria-labelledby={`${id}-label`}
+            style={{
+              padding: '0.4rem 0',
+              margin: 0,
+              listStyle: 'none',
+              maxHeight: '220px',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}
+          >
+            {displayedOptions.length === 0 ? (
+              <li
+                style={{
+                  padding: '1rem 1.2rem',
+                  color: '#5a7060',
+                  fontSize: '0.9rem',
+                  textAlign: 'center',
+                  fontStyle: 'italic',
+                }}
+              >
+                No results found
+              </li>
+            ) : (
+              displayedOptions.map((opt, index) => {
+                const isSelected = value === opt.value;
+                const isHighlighted = highlightedIndex === index;
+                return (
+                  <li
+                    key={opt.value || `opt-${index}`}
+                    id={`${id}-opt-${index}`}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => selectOption(opt.value)}
+                      onKeyDown={handleKeyDown}
+                      style={{
+                        width: '100%',
+                        padding: '0.85rem 1.2rem',
+                        background: isHighlighted ? '#f4fbf6' : isSelected ? '#f0fdf4' : 'transparent',
+                        border: 'none',
+                        color: isHighlighted || isSelected ? '#006837' : '#002818',
+                        fontFamily: 'Inter, sans-serif',
+                        fontSize: '0.95rem',
+                        fontWeight: isSelected ? 700 : 400,
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        transition: 'background 0.15s ease, color 0.15s ease',
+                      }}
+                      onMouseEnter={() => setHighlightedIndex(index)}
+                      onMouseLeave={() => setHighlightedIndex(-1)}
+                    >
+                      {opt.label}
+                    </button>
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const DomesticInspectionForm = ({ prefillService = '' }) => {
@@ -145,6 +516,22 @@ const DomesticInspectionForm = ({ prefillService = '' }) => {
     const { name, value } = e.target;
     setFields((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
+  };
+
+  const handleRegionChange = (val) => {
+    setFields((prev) => ({
+      ...prev,
+      region: val,
+    }));
+    if (errors.region) setErrors((prev) => ({ ...prev, region: null }));
+  };
+
+  const handleDistrictChange = (val) => {
+    setFields((prev) => ({
+      ...prev,
+      district: val,
+    }));
+    if (errors.district) setErrors((prev) => ({ ...prev, district: null }));
   };
 
   const focusStyle = (field) =>
@@ -264,7 +651,7 @@ const DomesticInspectionForm = ({ prefillService = '' }) => {
       style={{
         background: 'white',
         borderRadius: 'clamp(16px, 4vw, 28px)',
-        padding: 'clamp(1.5rem, 5vw, 2.75rem)',
+        padding: 'clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2rem)',
         border: '1px solid rgba(0,104,55,0.08)',
         boxShadow: '0 24px 64px rgba(0,40,24,0.1)',
         position: 'relative',
@@ -397,66 +784,106 @@ const DomesticInspectionForm = ({ prefillService = '' }) => {
           }}
         >
           <div>
-            <label htmlFor="di-propertyType" style={labelStyle}>
+            <label id="di-propertyType-label" htmlFor="di-propertyType-trigger" style={labelStyle}>
               Property Type
             </label>
-            <select
+            <CustomDropdown
               id="di-propertyType"
               name="propertyType"
               value={fields.propertyType}
-              onChange={handleChange}
+              options={PROPERTY_TYPES.map((t) => ({ value: t, label: t }))}
+              placeholder="Select type (optional)"
+              onChange={(val) => {
+                setFields((prev) => ({ ...prev, propertyType: val }));
+                if (errors.propertyType) {
+                  setErrors((prev) => ({ ...prev, propertyType: null }));
+                }
+              }}
               onFocus={() => setFocused('propertyType')}
               onBlur={() => setFocused('')}
-              style={{
-                ...inputStyle(false),
-                ...focusStyle('propertyType'),
-                appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23006837' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 1rem center',
-                paddingRight: '2.5rem',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="">Select type (optional)</option>
-              {PROPERTY_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
+              isFocused={focused === 'propertyType'}
+              hasError={!!errors.propertyType}
+              inputStyle={inputStyle}
+            />
           </div>
 
           <div>
-            <label htmlFor="di-propertySize" style={labelStyle}>
+            <label id="di-propertySize-label" htmlFor="di-propertySize-trigger" style={labelStyle}>
               Property Size <span style={{ color: '#ef4444' }}>*</span>
             </label>
-            <select
+            <CustomDropdown
               id="di-propertySize"
               name="propertySize"
               value={fields.propertySize}
-              onChange={handleChange}
+              options={PROPERTY_SIZES.map((s) => ({ value: s, label: s }))}
+              placeholder="Select size"
+              onChange={(val) => {
+                setFields((prev) => ({ ...prev, propertySize: val }));
+                if (errors.propertySize) {
+                  setErrors((prev) => ({ ...prev, propertySize: null }));
+                }
+              }}
               onFocus={() => setFocused('propertySize')}
               onBlur={() => setFocused('')}
-              style={{
-                ...inputStyle(errors.propertySize),
-                ...focusStyle('propertySize'),
-                appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23006837' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 1rem center',
-                paddingRight: '2.5rem',
-                cursor: 'pointer',
-              }}
-              aria-describedby={errors.propertySize ? 'di-propertySize-error' : undefined}
-              aria-invalid={!!errors.propertySize}
-            >
-              <option value="">Select size</option>
-              {PROPERTY_SIZES.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+              isFocused={focused === 'propertySize'}
+              hasError={!!errors.propertySize}
+              inputStyle={inputStyle}
+            />
             {errors.propertySize && (
               <span id="di-propertySize-error" style={errorStyle}>{errors.propertySize}</span>
             )}
+          </div>
+        </div>
+
+        {/* Region + District / Area side by side */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1.25rem',
+            marginBottom: '1.25rem',
+          }}
+        >
+          <div>
+            <label id="di-region-label" htmlFor="di-region-trigger" style={labelStyle}>
+              Region
+            </label>
+            <CustomDropdown
+              id="di-region"
+              name="region"
+              value={fields.region}
+              options={REGIONS.map((r) => ({ value: r, label: r }))}
+              placeholder="Please Select"
+              onChange={handleRegionChange}
+              onFocus={() => setFocused('region')}
+              onBlur={() => setFocused('')}
+              isFocused={focused === 'region'}
+              hasError={!!errors.region}
+              inputStyle={inputStyle}
+              isSearchable={true}
+              searchPlaceholder="Search or type region..."
+            />
+          </div>
+
+          <div>
+            <label id="di-district-label" htmlFor="di-district-trigger" style={labelStyle}>
+              District / Area
+            </label>
+            <CustomDropdown
+              id="di-district"
+              name="district"
+              value={fields.district}
+              options={DISTRICTS.map((d) => ({ value: d, label: d }))}
+              placeholder="Please Select"
+              onChange={handleDistrictChange}
+              onFocus={() => setFocused('district')}
+              onBlur={() => setFocused('')}
+              isFocused={focused === 'district'}
+              hasError={!!errors.district}
+              inputStyle={inputStyle}
+              isSearchable={true}
+              searchPlaceholder="Search or type district/area..."
+            />
           </div>
         </div>
 
@@ -473,7 +900,7 @@ const DomesticInspectionForm = ({ prefillService = '' }) => {
             onChange={handleChange}
             onFocus={() => setFocused('propertyAddress')}
             onBlur={() => setFocused('')}
-            placeholder="123 Example Street, Auckland"
+            placeholder="123 Example Street"
             autoComplete="street-address"
             style={{ ...inputStyle(errors.propertyAddress), ...focusStyle('propertyAddress') }}
             aria-describedby={errors.propertyAddress ? 'di-propertyAddress-error' : undefined}
@@ -586,34 +1013,27 @@ const DomesticInspectionForm = ({ prefillService = '' }) => {
           </div>
 
           <div>
-            <label htmlFor="di-preferredTime" style={labelStyle}>
+            <label id="di-preferredTime-label" htmlFor="di-preferredTime-trigger" style={labelStyle}>
               Preferred Time Window <span style={{ color: '#ef4444' }}>*</span>
             </label>
-            <select
+            <CustomDropdown
               id="di-preferredTime"
               name="preferredTime"
               value={fields.preferredTime}
-              onChange={handleChange}
+              options={TIME_OPTIONS}
+              placeholder="Select a time window"
+              onChange={(val) => {
+                setFields((prev) => ({ ...prev, preferredTime: val }));
+                if (errors.preferredTime) {
+                  setErrors((prev) => ({ ...prev, preferredTime: null }));
+                }
+              }}
               onFocus={() => setFocused('preferredTime')}
               onBlur={() => setFocused('')}
-              style={{
-                ...inputStyle(errors.preferredTime),
-                ...focusStyle('preferredTime'),
-                appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23006837' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 1rem center',
-                paddingRight: '2.5rem',
-                cursor: 'pointer',
-              }}
-              aria-describedby={errors.preferredTime ? 'di-preferredTime-error' : undefined}
-              aria-invalid={!!errors.preferredTime}
-            >
-              <option value="">Select a time window</option>
-              {TIME_OPTIONS.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
+              isFocused={focused === 'preferredTime'}
+              hasError={!!errors.preferredTime}
+              inputStyle={inputStyle}
+            />
             {errors.preferredTime && (
               <span id="di-preferredTime-error" style={errorStyle}>{errors.preferredTime}</span>
             )}
@@ -671,36 +1091,44 @@ const DomesticInspectionForm = ({ prefillService = '' }) => {
       )}
 
       {/* Submit */}
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="btn btn-primary"
-        style={{
-          width: '100%',
-          padding: '1.1rem',
-          fontSize: '1rem',
-          borderRadius: '14px',
-          opacity: isLoading ? 0.7 : 1,
-          cursor: isLoading ? 'not-allowed' : 'pointer',
-          letterSpacing: '0.03em',
-        }}
-      >
-        {isLoading ? (
-          'Submitting...'
-        ) : (
-          <>
-            BOOK CLEANING INSPECTION NOW
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </>
-        )}
-      </button>
+      <div style={{ marginTop: 'clamp(1.5rem, 5vw, 2.25rem)', marginBottom: 'clamp(1rem, 3.5vw, 1.75rem)' }}>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="btn btn-primary"
+          style={{
+            width: '100%',
+            padding: '1.1rem clamp(1rem, 4vw, 1.5rem)',
+            fontSize: 'clamp(0.75rem, 3vw, 0.95rem)',
+            borderRadius: '14px',
+            opacity: isLoading ? 0.7 : 1,
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            letterSpacing: '0.03em',
+            whiteSpace: 'nowrap',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 'clamp(0.5rem, 2vw, 0.8rem)',
+            boxSizing: 'border-box',
+          }}
+        >
+          {isLoading ? (
+            'Submitting...'
+          ) : (
+            <>
+              BOOK CLEANING INSPECTION NOW
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Privacy note */}
       <div
         style={{
-          marginTop: '1.25rem',
+          marginTop: '0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

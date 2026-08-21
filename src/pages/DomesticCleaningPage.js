@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import SEO from '../components/SEO';
 import Footer from '../components/Footer';
 import DomesticInspectionForm from '../components/DomesticInspectionForm';
@@ -25,179 +26,45 @@ const deepCleanCategories = allInclusiveDeepClean.sections.map((section, index) 
   count: section.items.length,
 }));
 
-// ── Inline expandable inclusion categories ──
-// NO modal, NO scroll lock, NO document.body.style.overflow manipulation.
-// Expand/collapse happens inline in document flow.
-const InclusionCategoryCard = ({ category, isOpen, onToggle }) => {
-  const panelId = `inclusion-panel-${category.title.replace(/\s+/g, '-').toLowerCase()}`;
-  const buttonId = `inclusion-btn-${category.title.replace(/\s+/g, '-').toLowerCase()}`;
-
-  return (
-    <div
-      style={{
-        border: `1.5px solid ${isOpen ? 'rgba(0,104,55,0.25)' : 'rgba(0,104,55,0.1)'}`,
-        borderRadius: '18px',
-        background: isOpen ? '#f4fbf6' : 'white',
-        transition: 'border-color 0.2s ease, background 0.2s ease',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Card trigger button */}
-      <button
-        id={buttonId}
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={panelId}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1rem',
-          padding: '1.1rem 1.25rem',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          textAlign: 'left',
-        }}
-      >
-        <div
-          style={{
-            width: '46px',
-            height: '46px',
-            flexShrink: 0,
-            borderRadius: '13px',
-            background: isOpen
-              ? 'linear-gradient(135deg, rgba(0,104,55,0.15), rgba(201,168,76,0.1))'
-              : 'linear-gradient(135deg, rgba(0,104,55,0.07), rgba(201,168,76,0.06))',
-            border: '1px solid rgba(0,104,55,0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.3rem',
-            transition: 'background 0.2s ease',
-          }}
-          aria-hidden="true"
-        >
-          {category.icon}
-        </div>
-
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontFamily: 'Playfair Display, serif',
-              fontSize: '0.97rem',
-              color: isOpen ? '#002818' : '#1e3a29',
-              lineHeight: 1.3,
-              marginBottom: '0.2rem',
-              fontWeight: 700,
-            }}
-          >
-            {category.title}
-          </div>
-          <div
-            style={{
-              fontFamily: 'Sora, sans-serif',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              color: '#5a7060',
-            }}
-          >
-            {category.count} inclusions
-          </div>
-        </div>
-
-        {/* Chevron */}
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={isOpen ? '#006837' : '#5a7060'}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{
-            flexShrink: 0,
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s ease',
-          }}
-          aria-hidden="true"
-        >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </button>
-
-      {/* Expanded content — inline, no scroll container */}
-      {isOpen && (
-        <div
-          id={panelId}
-          role="region"
-          aria-labelledby={buttonId}
-          style={{
-            padding: '0 1.25rem 1.25rem',
-          }}
-        >
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.45rem' }}>
-            {category.items.map((item) => (
-              <li
-                key={item}
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '0.65rem',
-                  fontSize: '0.88rem',
-                  color: '#2d4a37',
-                  lineHeight: 1.65,
-                }}
-              >
-                <span
-                  style={{
-                    flexShrink: 0,
-                    marginTop: '0.3rem',
-                    fontSize: '0.65rem',
-                    fontWeight: 900,
-                    color: '#006837',
-                  }}
-                  aria-hidden="true"
-                >
-                  ✓
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
-          {category.note && (
-            <div
-              style={{
-                marginTop: '1rem',
-                padding: '0.85rem 1rem',
-                borderRadius: '12px',
-                border: '1px solid rgba(0,104,55,0.1)',
-                background: 'white',
-                color: '#3c5949',
-                fontSize: '0.85rem',
-                lineHeight: 1.65,
-              }}
-            >
-              <span style={{ fontWeight: 700, color: '#006837' }}>Note: </span>
-              {category.note}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
 // ── Main page ──
 const DomesticCleaningPage = () => {
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [prefillService, setPrefillService] = useState('');
+  const closeButtonRef = useRef(null);
+  const lastTriggerRef = useRef(null);
 
-  const toggleCategory = (title) => {
-    setActiveCategory((prev) => (prev === title ? null : title));
-  };
+  useEffect(() => {
+    if (selectedCategory === null) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setSelectedCategory(null);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    const focusTimer = window.setTimeout(() => {
+      closeButtonRef.current?.focus({ preventScroll: true });
+    }, 0);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+
+      if (lastTriggerRef.current) {
+        window.requestAnimationFrame(() => {
+          lastTriggerRef.current?.focus({ preventScroll: true });
+        });
+      }
+    };
+  }, [selectedCategory]);
 
   const scrollToInspection = () => {
     const el = document.getElementById('inspection');
@@ -250,7 +117,7 @@ const DomesticCleaningPage = () => {
               className="fade-in-2"
               style={{
                 fontFamily: 'Playfair Display, serif',
-                fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+                fontSize: 'clamp(1.8rem, 6.5vw, 5rem)',
                 fontWeight: 800,
                 color: '#ffffff',
                 lineHeight: 1.08,
@@ -283,17 +150,24 @@ const DomesticCleaningPage = () => {
               style={{ display: 'flex', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap' }}
             >
               <button
-                className="btn btn-gold"
+                className="btn btn-gold hero-cta-btn"
                 onClick={() => handleBookCTA()}
-                style={{ padding: '1rem 2rem', fontSize: '0.92rem' }}
+                style={{
+                  padding: '1rem clamp(1rem, 4vw, 2rem)',
+                  fontSize: 'clamp(0.72rem, 3vw, 0.92rem)',
+                  whiteSpace: 'nowrap',
+                }}
               >
                 BOOK CLEANING INSPECTION NOW
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ flexShrink: 0 }}><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </button>
               <a
                 href="#pricing"
-                className="btn btn-outline-white"
-                style={{ padding: '1rem 2rem', fontSize: '0.92rem' }}
+                className="btn btn-outline-white hero-cta-btn"
+                style={{
+                  padding: '1rem clamp(1rem, 4vw, 2rem)',
+                  fontSize: 'clamp(0.72rem, 3vw, 0.92rem)',
+                }}
               >
                 View Pricing
               </a>
@@ -322,7 +196,7 @@ const DomesticCleaningPage = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))',
               gap: 'clamp(1.25rem, 3vw, 2rem)',
               marginTop: '2.5rem',
             }}
@@ -337,7 +211,7 @@ const DomesticCleaningPage = () => {
                 overflow: 'hidden',
               }}
             >
-              <div style={{ padding: '1.5rem 1.75rem', borderBottom: '1px solid rgba(0,104,55,0.08)' }}>
+              <div style={{ padding: '1.5rem clamp(1rem, 3vw, 1.75rem)', borderBottom: '1px solid rgba(0,104,55,0.08)' }}>
                 <span className="label-badge" style={{ marginBottom: '0.75rem', display: 'inline-flex' }}>Standard Clean</span>
                 <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.5rem', color: '#002818', marginBottom: '0.5rem' }}>
                   Regular Upkeep
@@ -349,7 +223,7 @@ const DomesticCleaningPage = () => {
 
               <div style={{ overflow: 'hidden' }}>
                 {/* Table header */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', padding: '0.65rem 1.75rem', background: '#f8faf8', borderBottom: '1px solid rgba(0,104,55,0.06)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', padding: '0.65rem clamp(1rem, 3vw, 1.75rem)', background: '#f8faf8', borderBottom: '1px solid rgba(0,104,55,0.06)' }}>
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#006837' }}>Property Size</span>
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#006837', textAlign: 'right' }}>ex. GST</span>
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#006837', textAlign: 'right' }}>incl. GST</span>
@@ -361,7 +235,7 @@ const DomesticCleaningPage = () => {
                       display: 'grid',
                       gridTemplateColumns: '1fr auto auto',
                       gap: '0.5rem',
-                      padding: '0.75rem 1.75rem',
+                      padding: '0.75rem clamp(1rem, 3vw, 1.75rem)',
                       borderBottom: i < domesticPricing.standardClean.rows.length - 1 ? '1px solid rgba(0,104,55,0.05)' : 'none',
                       background: i % 2 === 0 ? 'white' : '#fafcfa',
                     }}
@@ -374,7 +248,7 @@ const DomesticCleaningPage = () => {
               </div>
 
               {/* Discounts */}
-              <div style={{ padding: '1.25rem 1.75rem', borderTop: '1px solid rgba(0,104,55,0.08)', background: '#f0fdf4' }}>
+              <div style={{ padding: '1.25rem clamp(1rem, 3vw, 1.75rem)', borderTop: '1px solid rgba(0,104,55,0.08)', background: '#f0fdf4' }}>
                 <p style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#006837', marginBottom: '0.6rem' }}>
                   Recurring Discounts
                 </p>
@@ -386,7 +260,7 @@ const DomesticCleaningPage = () => {
                 ))}
               </div>
 
-              <div style={{ padding: '1rem 1.75rem 1.5rem' }}>
+              <div style={{ padding: '1rem clamp(1rem, 3vw, 1.75rem) 1.5rem' }}>
                 <button
                   className="btn btn-primary"
                   style={{ width: '100%', borderRadius: '12px', padding: '0.9rem' }}
@@ -415,7 +289,7 @@ const DomesticCleaningPage = () => {
                 </span>
               </div>
 
-              <div style={{ padding: '1.5rem 1.75rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ padding: '1.5rem clamp(1rem, 3vw, 1.75rem)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 <span className="label-badge label-badge-gold" style={{ marginBottom: '0.75rem', display: 'inline-flex' }}>Deep Clean</span>
                 <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.5rem', color: 'white', marginBottom: '0.5rem' }}>
                   All-Inclusive Deep Clean
@@ -426,7 +300,7 @@ const DomesticCleaningPage = () => {
               </div>
 
               <div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', padding: '0.65rem 1.75rem', background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', padding: '0.65rem clamp(1rem, 3vw, 1.75rem)', background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#dfc074' }}>Property Size</span>
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#dfc074', textAlign: 'right' }}>ex. GST</span>
                   <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#dfc074', textAlign: 'right' }}>incl. GST</span>
@@ -438,7 +312,7 @@ const DomesticCleaningPage = () => {
                       display: 'grid',
                       gridTemplateColumns: '1fr auto auto',
                       gap: '0.5rem',
-                      padding: '0.75rem 1.75rem',
+                      padding: '0.75rem clamp(1rem, 3vw, 1.75rem)',
                       borderBottom: i < domesticPricing.deepClean.rows.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                     }}
                   >
@@ -449,7 +323,7 @@ const DomesticCleaningPage = () => {
                 ))}
               </div>
 
-              <div style={{ padding: '1.25rem 1.75rem', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(201,168,76,0.07)' }}>
+              <div style={{ padding: '1.25rem clamp(1rem, 3vw, 1.75rem)', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(201,168,76,0.07)' }}>
                 <p style={{ fontFamily: 'Sora, sans-serif', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#dfc074', marginBottom: '0.6rem' }}>
                   All add-on services included
                 </p>
@@ -462,7 +336,7 @@ const DomesticCleaningPage = () => {
                 <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>+ more included below</p>
               </div>
 
-              <div style={{ padding: '1rem 1.75rem 1.5rem' }}>
+              <div style={{ padding: '1rem clamp(1rem, 3vw, 1.75rem) 1.5rem' }}>
                 <button
                   className="btn btn-gold"
                   style={{ width: '100%', borderRadius: '12px', padding: '0.9rem' }}
@@ -512,23 +386,34 @@ const DomesticCleaningPage = () => {
             </p>
           </div>
 
-          {/* Inline expandable inclusion categories — NO modal */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '0.85rem',
-              marginBottom: '2.5rem',
-              alignItems: 'start',
-            }}
-          >
+          {/* Coverage area categories card grid */}
+          <div className="deep-clean-category-grid" style={{ marginBottom: '2.5rem' }}>
             {deepCleanCategories.map((category) => (
-              <InclusionCategoryCard
+              <button
                 key={category.title}
-                category={category}
-                isOpen={activeCategory === category.title}
-                onToggle={() => toggleCategory(category.title)}
-              />
+                type="button"
+                className="deep-clean-category-card"
+                onClick={(event) => {
+                  lastTriggerRef.current = event.currentTarget;
+                  setSelectedCategory(category);
+                }}
+                aria-label={`View details for ${category.title}`}
+              >
+                <div className="deep-clean-category-icon" aria-hidden="true">
+                  {category.icon}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h3 className="deep-clean-category-title">{category.title}</h3>
+                  <p className="deep-clean-category-count">{category.count} inclusions</p>
+                </div>
+                <span
+                  className="deep-clean-category-action"
+                  style={{ display: 'inline-block' }}
+                  aria-hidden="true"
+                >
+                  View details →
+                </span>
+              </button>
             ))}
           </div>
         </div>
@@ -616,8 +501,8 @@ const DomesticCleaningPage = () => {
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr auto auto',
-                gap: '1rem',
-                padding: '0.85rem 1.5rem',
+                gap: 'clamp(0.5rem, 2vw, 1rem)',
+                padding: '0.85rem clamp(0.75rem, 3vw, 1.5rem)',
                 background: '#f8faf8',
                 borderBottom: '1px solid rgba(0,104,55,0.08)',
               }}
@@ -632,8 +517,8 @@ const DomesticCleaningPage = () => {
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr auto auto',
-                  gap: '1rem',
-                  padding: '0.8rem 1.5rem',
+                  gap: 'clamp(0.5rem, 2vw, 1rem)',
+                  padding: '0.8rem clamp(0.75rem, 3vw, 1.5rem)',
                   borderBottom: i < domesticAddOns.length - 1 ? '1px solid rgba(0,104,55,0.05)' : 'none',
                   background: i % 2 === 0 ? 'white' : '#fafcfa',
                   alignItems: 'center',
@@ -904,6 +789,59 @@ const DomesticCleaningPage = () => {
       {/* 9. FOOTER                                         */}
       {/* ────────────────────────────────────────────────── */}
       <Footer />
+
+      {selectedCategory && typeof document !== 'undefined'
+        ? createPortal(
+            <div className="deep-clean-modal-overlay" role="presentation" onMouseDown={() => setSelectedCategory(null)}>
+              <div
+                className="deep-clean-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="deep-clean-modal-title"
+                aria-describedby="deep-clean-modal-description"
+                onMouseDown={(event) => event.stopPropagation()}
+              >
+                <div className="deep-clean-modal__header">
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span className="label-badge label-badge-gold" style={{ marginBottom: '0.85rem', display: 'inline-flex' }}>
+                      Coverage Area
+                    </span>
+                    <h3 id="deep-clean-modal-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <span aria-hidden="true">{selectedCategory.icon}</span>
+                      <span>{selectedCategory.title}</span>
+                    </h3>
+                    <p id="deep-clean-modal-description">{selectedCategory.count} inclusions in this coverage area.</p>
+                  </div>
+
+                  <button
+                    ref={closeButtonRef}
+                    type="button"
+                    className="deep-clean-modal__close"
+                    onClick={() => setSelectedCategory(null)}
+                    aria-label={`Close details for ${selectedCategory.title}`}
+                  >
+                    Close
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+
+                <div className="deep-clean-modal__body">
+                  <ul className="deep-clean-detail-list deep-clean-detail-list--dialog">
+                    {selectedCategory.items.map((item) => (
+                      <li key={item}>
+                        <span aria-hidden="true">✓</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {selectedCategory.note && <div className="deep-clean-detail-note">{selectedCategory.note}</div>}
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 };
