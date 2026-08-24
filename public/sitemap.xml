@@ -6,6 +6,16 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://www.purenestcleaning.co.nz/commercial</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.purenestcleaning.co.nz/domestic-cleaning</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.purenestcleaning.co.nz/services</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>

@@ -1,13 +1,56 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { company, navLinks } from "../models/dataModel";
+import { useNavigate, useLocation } from "react-router-dom";
+import { company } from "../models/dataModel";
 import { handleNavClick } from "../controllers/appController";
 import Logo from "./Logo";
 import "./Footer.css";
 
+const commercialLinks = [
+  { label: "Home", path: "/commercial" },
+  { label: "Services", path: "/services" },
+  { label: "About", path: "/about" },
+  { label: "Projects", path: "/projects" },
+  { label: "Contact", path: "/contact" },
+];
+
+const domesticLinks = [
+  { label: "Main Site", path: "/" },
+  { label: "Domestic Home", path: "/domestic-cleaning" },
+  { label: "Services & Pricing", path: "/domestic-cleaning/services" },
+  { label: "Deep Clean", path: "/domestic-cleaning/services#deep-clean" },
+  { label: "How It Works", path: "/domestic-cleaning#how-it-works" },
+  { label: "Book Inspection", path: "/domestic-cleaning/services#inspection" },
+];
+
 const Footer = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const year = new Date().getFullYear();
+
+  React.useEffect(() => {
+    if (location.pathname.startsWith("/domestic-cleaning")) {
+      sessionStorage.setItem("serviceContext", "domestic");
+    } else if (
+      location.pathname.startsWith("/commercial") ||
+      location.pathname.startsWith("/services")
+    ) {
+      sessionStorage.setItem("serviceContext", "commercial");
+    }
+  }, [location.pathname]);
+
+  const getServiceContext = () => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("serviceContext");
+      if (stored) return stored;
+    }
+    if (location.pathname.startsWith("/domestic-cleaning")) {
+      return "domestic";
+    }
+    return "commercial";
+  };
+
+  const isDomestic = getServiceContext() === "domestic";
+  const links = isDomestic ? domesticLinks : commercialLinks;
 
   return (
     <footer className="footer">
@@ -20,8 +63,9 @@ const Footer = () => {
               <Logo light={true} height={44} />
             </div>
             <p className="footer__brand-desc">
-              Delivering world-class cleaning, landscaping, and pest control services
-              to institutional and commercial facilities across New Zealand.
+              {isDomestic
+                ? "Premium residential cleaning services for homes and apartments in Auckland. Standard Clean and All-Inclusive Deep Clean starting with a free inspection."
+                : "Delivering world-class cleaning, landscaping, and pest control services to institutional and commercial facilities across New Zealand."}
             </p>
             <div className="footer__badges">
               <span className="footer__badge">✓ NZ Licensed</span>
@@ -34,7 +78,7 @@ const Footer = () => {
           <div className="footer__col">
             <span className="footer__col-title">Navigation</span>
             <ul className="footer__col-links">
-              {navLinks.map((link) => (
+              {links.map((link) => (
                 <li key={link.path}>
                   <button onClick={() => handleNavClick(navigate, link.path, null)}>
                     {link.label}
@@ -48,11 +92,23 @@ const Footer = () => {
           <div className="footer__col">
             <span className="footer__col-title">Services</span>
             <ul className="footer__col-links">
-              <li><span>Custodial &amp; Cleaning</span></li>
-              <li><span>Landscaping &amp; Gardening</span></li>
-              <li><span>Pest Control</span></li>
-              <li><span>Snow &amp; Ice Removal</span></li>
-              <li><span>Drain &amp; Sewer Cleaning</span></li>
+              {isDomestic ? (
+                <>
+                  <li><span>Standard Clean</span></li>
+                  <li><span>Deep Clean</span></li>
+                  <li><span>Oven &amp; Fridge Cleaning</span></li>
+                  <li><span>Carpet Steam Clean</span></li>
+                  <li><span>Window Cleaning</span></li>
+                </>
+              ) : (
+                <>
+                  <li><span>Custodial &amp; Cleaning</span></li>
+                  <li><span>Landscaping &amp; Gardening</span></li>
+                  <li><span>Pest Control</span></li>
+                  <li><span>Snow &amp; Ice Removal</span></li>
+                  <li><span>Drain &amp; Sewer Cleaning</span></li>
+                </>
+              )}
             </ul>
           </div>
 

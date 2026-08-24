@@ -1,15 +1,67 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { navLinks } from "../models/dataModel";
 import { handleNavClick } from "../controllers/appController";
 import Logo from "./Logo";
 import "./Navbar.css";
+
+const commercialLinks = [
+  { label: "Home", path: "/commercial" },
+  { label: "Services", path: "/services" },
+  { label: "About", path: "/about" },
+  { label: "Projects", path: "/projects" },
+  { label: "Contact", path: "/contact" },
+];
+
+const domesticLinks = [
+  { label: "Home", path: "/domestic-cleaning" },
+  { label: "Services", path: "/domestic-cleaning/services" },
+  { label: "About", path: "/about" },
+  { label: "Projects", path: "/projects" },
+  { label: "Contact", path: "/contact" },
+];
 
 const Navbar = ({ dark = false }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/domestic-cleaning")) {
+      sessionStorage.setItem("serviceContext", "domestic");
+    } else if (
+      location.pathname.startsWith("/commercial") ||
+      location.pathname.startsWith("/services")
+    ) {
+      sessionStorage.setItem("serviceContext", "commercial");
+    }
+  }, [location.pathname]);
+
+  const getServiceContext = () => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("serviceContext");
+      if (stored) return stored;
+    }
+    if (location.pathname.startsWith("/domestic-cleaning")) {
+      return "domestic";
+    }
+    return "commercial";
+  };
+
+  const isDomestic = getServiceContext() === "domestic";
+  const links = isDomestic ? domesticLinks : commercialLinks;
+
+  const isLinkActive = (linkPath) => {
+    const currentPath = location.pathname;
+    const currentHash = location.hash;
+
+    if (linkPath.includes('#')) {
+      const [path, hash] = linkPath.split('#');
+      return currentPath === path && currentHash === `#${hash}`;
+    }
+
+    return currentPath === linkPath && !currentHash;
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -39,7 +91,6 @@ const Navbar = ({ dark = false }) => {
 
     updateNavbarHeight();
 
-    // Use resize listener and standard animation frames/timeouts to capture exact height changes
     window.addEventListener("resize", updateNavbarHeight);
     const timeoutId = setTimeout(updateNavbarHeight, 100);
 
@@ -53,31 +104,37 @@ const Navbar = ({ dark = false }) => {
     <>
       <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""} ${dark ? "navbar--dark" : ""} ${menuOpen ? "navbar--open" : ""}`}>
         <div className="navbar__inner">
-          {/* Logo */}
-          <button className="navbar__logo" onClick={() => handleNavClick(navigate, "/", null)}>
+          {/* Logo — Universal return to global ServiceSelectorPage */}
+          <button
+            className="navbar__logo"
+            onClick={() => handleNavClick(navigate, "/", null)}
+          >
             <Logo light={!scrolled && !dark && !menuOpen} height={44} />
           </button>
 
           {/* Desktop Links */}
           <div className="navbar__center">
             <ul className="navbar__links">
-              {navLinks.map((link) => (
-                <li key={link.path}>
-                  <button
-                    className={`navbar__link ${location.pathname === link.path ? "active" : ""}`}
-                    onClick={() => handleNavClick(navigate, link.path, null)}
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
+              {links.map((link) => {
+                const isActive = isLinkActive(link.path);
+                return (
+                  <li key={link.path}>
+                    <button
+                      className={`navbar__link ${isActive ? "active" : ""}`}
+                      onClick={() => handleNavClick(navigate, link.path, null)}
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
           {/* CTA */}
           <button
             className="navbar__cta"
-            onClick={() => handleNavClick(navigate, "/contact", null)}
+            onClick={() => handleNavClick(navigate, isDomestic ? "/domestic-cleaning/services#inspection" : "/contact", null)}
           >
             Get a Quote →
           </button>
@@ -104,18 +161,21 @@ const Navbar = ({ dark = false }) => {
 
       {/* Mobile Menu */}
       <div className={`navbar__mobile ${menuOpen ? "navbar__mobile--open" : ""}`}>
-        {navLinks.map((link) => (
-          <button
-            key={link.path}
-            className={`navbar__mobile-link ${location.pathname === link.path ? "active" : ""}`}
-            onClick={() => handleNavClick(navigate, link.path, setMenuOpen)}
-          >
-            {link.label}
-          </button>
-        ))}
+        {links.map((link) => {
+          const isActive = isLinkActive(link.path);
+          return (
+            <button
+              key={link.path}
+              className={`navbar__mobile-link ${isActive ? "active" : ""}`}
+              onClick={() => handleNavClick(navigate, link.path, setMenuOpen)}
+            >
+              {link.label}
+            </button>
+          );
+        })}
         <button
           className="navbar__mobile-cta"
-          onClick={() => handleNavClick(navigate, "/contact", setMenuOpen)}
+          onClick={() => handleNavClick(navigate, isDomestic ? "/domestic-cleaning/services#inspection" : "/contact", setMenuOpen)}
         >
           Get a Quote →
         </button>

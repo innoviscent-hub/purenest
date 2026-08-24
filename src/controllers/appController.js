@@ -9,7 +9,17 @@ export const scrollToTop = () => {
 export const handleNavClick = (navigate, path, setMenuOpen) => {
   navigate(path);
   if (setMenuOpen) setMenuOpen(false);
-  scrollToTop();
+  if (!path.includes('#')) {
+    scrollToTop();
+  } else {
+    const id = path.split('#')[1];
+    if (id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
 };
 
 export const validateContactForm = (fields) => {

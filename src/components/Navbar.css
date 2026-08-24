@@ -356,7 +356,7 @@
   .navbar__logo {
     flex: 1; /* Stretch logo container full right so tagline has room */
     display: flex;
-    justify-content: center; /* Center the logo container */
+    justify-content: flex-start; /* Align logo to the left */
   }
 
   .navbar__center,
