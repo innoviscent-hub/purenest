@@ -1,37 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.purenestcleaning.co.nz/</loc>
+    <loc>https://purenestcleaning.co.nz/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.purenestcleaning.co.nz/commercial</loc>
+    <loc>https://purenestcleaning.co.nz/commercial</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.purenestcleaning.co.nz/domestic-cleaning</loc>
+    <loc>https://purenestcleaning.co.nz/domestic-cleaning</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.purenestcleaning.co.nz/services</loc>
+    <loc>https://purenestcleaning.co.nz/domestic-cleaning/services</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://purenestcleaning.co.nz/services</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.purenestcleaning.co.nz/projects</loc>
+    <loc>https://purenestcleaning.co.nz/projects</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.purenestcleaning.co.nz/about</loc>
+    <loc>https://purenestcleaning.co.nz/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.purenestcleaning.co.nz/contact</loc>
+    <loc>https://purenestcleaning.co.nz/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
