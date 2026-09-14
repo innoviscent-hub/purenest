@@ -15,7 +15,7 @@ All tickets below were verified against the live purenestcleaning.co.nz site, th
 | 1 — CSR, no content in HTML | ✅ Real (confirmed via curl + zero Google index results) | ✅ Fixed |
 | 2 — Missing OG/Twitter tags | ✅ Real | ✅ Fixed |
 | 3 — No per-page metadata | ✅ Real | ✅ Fixed |
-| 4 — No robots.txt/sitemap.xml | ❌ Not accurate for purenestcleaning.co.nz (both already existed) | ✅ Cleaned up (domain/route fix) |
+| 4 — No robots.txt/sitemap.xml | ❌ Not accurate for purenestcleaning.co.nz (both already existed) | ✅ Cleaned up (domain/route fix); ✅ trailing-slash redirect regression found in live verification and fixed |
 | 5 — No structured data | ✅ Real | ✅ Fixed |
 | 6 — Redirect consistency | ❌ Not an issue for purenestcleaning.co.nz (redirects already correct) | No action needed |
 
@@ -160,6 +160,13 @@ Both files already existed and returned valid content (`curl` confirmed 200 OK f
 Found and fixed two real smaller issues while verifying:
 - `sitemap.xml`/`robots.txt` referenced `https://www.purenestcleaning.co.nz/...`, but `www` 301-redirects to the non-www canonical domain — every sitemap URL was costing crawlers an extra redirect hop. Switched both files to the canonical non-www domain.
 - `/domestic-cleaning/services` (a real route in the app) was missing from the sitemap — added it.
+
+### ⚠️ Regression found in post-deploy live verification (2026-09-14), now fixed
+Testing the deployed site with plain `curl` found that every sitemap URL except `/` was 301-redirecting: `scripts/prerender.js` (Ticket 1) wrote each route to `build/<route>/index.html`, and Netlify's static-asset server always 301-redirects a slash-less request (`/about`) to the trailing-slash form (`/about/`) when only the directory+`index.html` variant exists — adding an avoidable redirect hop for every crawler on 7 of 8 sitemap entries, undercutting the whole point of Ticket 4.
+
+**Fix:** changed `scripts/prerender.js` to write flat `<route>.html` files (e.g. `build/about.html`) instead of `build/<route>/index.html`. This lets Netlify serve the exact request path directly with no redirect, and required no changes to `sitemap.xml`, canonical tags, or `og:url` (all already used the no-trailing-slash form).
+
+**Verified locally:** `npm run build` + prerender, served with `npx serve build` (non-SPA "pretty URL" mode, matching Netlify's static-asset resolution — `serve -s build` was tried first but its forced SPA fallback masked the bug, always returning `index.html` regardless of route). All 8 routes now return `200` directly with correct, unique per-route content — no redirect. **Not yet verified against production** — pending commit/deploy.
 
 ---
 

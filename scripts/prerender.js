@@ -86,9 +86,15 @@ async function prerender() {
       const html = await page.content();
       await page.close();
 
-      const outDir = route === '/' ? buildDir : path.join(buildDir, route);
-      fs.mkdirSync(outDir, { recursive: true });
-      const outFile = path.join(outDir, 'index.html');
+      // Write flat "<route>.html" files (not "<route>/index.html") so Netlify's
+      // static-asset server serves them directly at the exact route path. A
+      // directory + index.html pair instead triggers Netlify's pretty-URL
+      // trailing-slash redirect (/about -> /about/) ahead of any custom
+      // redirect rule, adding an avoidable hop for every crawler and visitor.
+      const outFile = route === '/'
+        ? path.join(buildDir, 'index.html')
+        : path.join(buildDir, `${route.replace(/^\//, '')}.html`);
+      fs.mkdirSync(path.dirname(outFile), { recursive: true });
       fs.writeFileSync(outFile, html);
       console.log(`Prerendered ${route} -> ${path.relative(buildDir, outFile)}`);
     }
